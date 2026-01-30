@@ -1,3 +1,8 @@
+import sqlite3
+import csv
+from datetime import datetime
+
+
 class BaseQuery:
     def __init__(
         self,
@@ -33,3 +38,28 @@ class BaseQuery:
             sql = f"(\n{sql}\n) AS {self.alias}"
 
         return sql
+
+
+    def execute_and_save(self, db_path: str = "food_reviews.db"):
+        """Execute this query and auto-save to CSV."""
+        # 1. Get SQL
+        sql = self.to_sql()
+
+        # 2. Execute
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        column_names = [desc[0] for desc in cursor.description]
+        conn.close()
+
+        # 3. Save to CSV
+        db_stem = db_path.replace('.db', '')
+        filename = f"{db_stem}.{self.table}.{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+
+        with open(filename, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow(column_names)
+            writer.writerows(results)
+
+        return results, filename

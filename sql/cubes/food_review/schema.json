@@ -1,6 +1,6 @@
 {
     "columns": {
-        "review_date": {
+        "date": {
             "type": "TIMESTAMP",
             "nullable": false,
             "description": "The date and time the review was posted"
@@ -13,11 +13,11 @@
             "type": "DECIMAL(3,1)",
             "nullable": false
         },
-        "user_name": {
+        "userName": {
             "type": "VARCHAR(255)",
             "nullable": true
         },
-        "app_name": {
+        "app": {
             "type": "VARCHAR(100)",
             "nullable": false
         },
@@ -25,15 +25,15 @@
             "type": "VARCHAR(50)",
             "nullable": false
         },
-        "reply_content": {
+        "replyContent": {
             "type": "TEXT",
             "nullable": true
         },
-        "replied_date": {
+        "repliedDate": {
             "type": "TIMESTAMP",
             "nullable": true
         },
-        "app_version": {
+        "appVersion": {
             "type": "VARCHAR(50)",
             "nullable": true
         }

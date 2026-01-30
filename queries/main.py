@@ -1,14 +1,10 @@
 from sql.models.base_query import BaseQuery
 
 query = BaseQuery(
-    table="quest_events",
-    dimensions=[
-        "organization_id",
-        "user_id",
-        "COUNTIF(result = 'failed') AS failed_count"
-    ],
-    condition="DATE(timestamp) = '2025-01-01'",
-    group_by=["organization_id", "user_id"],
+    table="food_review",
+    dimensions=["app_name", "score", "content"],
+    condition="score >= 4.5"
 )
 
-print(query.to_sql())
+results, filename = query.execute_and_save()
+print(f"✅ Saved {len(results)} rows to {filename}")

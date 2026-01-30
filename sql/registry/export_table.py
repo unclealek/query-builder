@@ -1,13 +1,12 @@
-from .models.table_creation.table_spec import TableSpec
+from sql.models.table_spec import TableSpec
 
+DB_FILE = "data/project.db"
 
 TABLE_REGISTRY = {
-    "food_reviews": TableSpec(
-        name="food_reviews",
-        schema_path="SQL/schemas/columns.json",  # Shared schema
-        source="data/prod/food_reviews.csv",
+    "food_review": TableSpec(
+        name="food_review",
+        schema_path="sql/cubes/food_review/schema.json",  #
+        db_path=DB_FILE,
         description="Production food delivery app reviews",
-        partition_by=["date"],
-        cluster_by=["app"]
     ),
 }
