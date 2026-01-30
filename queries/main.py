@@ -1,10 +1,11 @@
 from sql.models.base_query import BaseQuery
+from sql.config import DB_NAME
 
 query = BaseQuery(
     table="food_review",
-    dimensions=["app_name", "score", "content"],
+    dimensions=["userName", "score", "content"],
     condition="score >= 4.5"
 )
 
-results, filename = query.execute_and_save()
+results, filename = query.execute_and_save(DB_NAME)
 print(f"✅ Saved {len(results)} rows to {filename}")
