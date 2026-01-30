@@ -1,0 +1,41 @@
+{
+    "columns": {
+        "review_date": {
+            "type": "TIMESTAMP",
+            "nullable": false,
+            "description": "The date and time the review was posted"
+        },
+        "content": {
+            "type": "TEXT",
+            "nullable": true
+        },
+        "score": {
+            "type": "DECIMAL(3,1)",
+            "nullable": false
+        },
+        "user_name": {
+            "type": "VARCHAR(255)",
+            "nullable": true
+        },
+        "app_name": {
+            "type": "VARCHAR(100)",
+            "nullable": false
+        },
+        "platform": {
+            "type": "VARCHAR(50)",
+            "nullable": false
+        },
+        "reply_content": {
+            "type": "TEXT",
+            "nullable": true
+        },
+        "replied_date": {
+            "type": "TIMESTAMP",
+            "nullable": true
+        },
+        "app_version": {
+            "type": "VARCHAR(50)",
+            "nullable": true
+        }
+    }
+}
