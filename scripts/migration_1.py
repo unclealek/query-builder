@@ -1,22 +1,20 @@
 # sql/migration.py
 import sqlite3
 import json
+import csv
 from sql.config import DB_NAME, CSV_SOURCE
 
 def run_migration():
-    # 1. Get table
     from sql.registry.export_table import TABLE_REGISTRY
     table = TABLE_REGISTRY["food_review"]
 
-    # 2. Load schema
     with open(table.schema_path, 'r') as f:
         schema = json.load(f)
 
-    # 3. Connect to SQLite
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
-    # 4. Create table
+    # Create table if not exists
     col_defs = []
     for col_name, col_info in schema['columns'].items():
         col_type = col_info['type']
@@ -28,24 +26,49 @@ def run_migration():
         )
     """)
 
-    # 5. Load CSV
-    import csv
+    # Load CSV in batches with deduplication
+    batch_size = 50000
+    batch = []
+
     with open(CSV_SOURCE, 'r') as f:
         reader = csv.DictReader(f)
+        columns = reader.fieldnames
 
-        # Insert data
-        for row in reader:
-            placeholders = ', '.join(['?' for _ in row])
-            columns = ', '.join(row.keys())
-            cursor.execute(
-                f"INSERT INTO {table.name} ({columns}) VALUES ({placeholders})",
-                list(row.values())
+        for i, row in enumerate(reader):
+            batch.append(tuple(row[col] for col in columns))
+
+            if len(batch) >= batch_size:
+                # Use INSERT OR IGNORE to skip duplicates
+                placeholders = ', '.join(['?' for _ in columns])
+                cursor.executemany(
+                    f"""
+                    INSERT OR IGNORE INTO {table.name}
+                    ({', '.join(columns)})
+                    VALUES ({placeholders})
+                    """,
+                    batch
+                )
+                batch = []
+                print(f"Processed {i+1} rows...")
+
+        # Insert remaining with deduplication
+        if batch:
+            placeholders = ', '.join(['?' for _ in columns])
+            cursor.executemany(
+                f"""
+                INSERT OR IGNORE INTO {table.name}
+                ({', '.join(columns)})
+                VALUES ({placeholders})
+                """,
+                batch
             )
 
     conn.commit()
+    cursor.execute(f"SELECT COUNT(*) FROM {table.name}")
+    count = cursor.fetchone()[0]
     conn.close()
 
-    print(f"Loaded {table.name} from {table.source}")
+    print(f"✅ Loaded {count} unique rows into {table.name}")
 
 if __name__ == "__main__":
     run_migration()
