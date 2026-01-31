@@ -1,0 +1,6 @@
+date,content,score,userName,app,platform,replyContent,repliedDate,appVersion
+2024-01-01 10:00:00,"Great service",4.5,john_doe,UberEats,iOS,"Thank you!",2024-01-01 11:00:00,5.1.0
+2024-01-02 14:30:00,"Slow delivery",2.0,jane_smith,DoorDash,Android,,,3.2.1
+2024-01-03 09:15:00,"Perfect",5.0,bob_jones,Grubhub,iOS,"We appreciate it!",2024-01-03 10:00:00,4.0.0
+2024-01-03 16:45:00,"Average",3.0,alice_wong,Postmates,Android,"We'll improve",2024-01-03 17:30:00,2.5.0
+2024-01-04 12:00:00,"Terrible",1.0,charlie_brown,UberEats,iOS,"We apologize",2024-01-04 13:00:00,5.1.0
