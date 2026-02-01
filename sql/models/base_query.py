@@ -11,6 +11,7 @@ class BaseQuery:
         condition: str | None = None,
         group_by: list[str] | None = None,
         order_by:list[str] | None = None,
+        limit: int | None = None,
         alias: str | None = None,
     ):
         self.table = table
@@ -18,6 +19,7 @@ class BaseQuery:
         self.condition = condition
         self.group_by = group_by or []
         self.order_by = order_by or []
+        self.limit = limit
         self.alias = alias
 
     def to_sql(self) -> str:
@@ -33,6 +35,9 @@ class BaseQuery:
 
         if self.order_by:
             sql += f"\nORDER BY {', '.join(self.order_by)}"
+
+        if self.limit:
+            sql += f"\nLIMIT {self.limit}"
 
         if self.alias:
             sql = f"(\n{sql}\n) AS {self.alias}"
@@ -63,3 +68,4 @@ class BaseQuery:
             writer.writerows(results)
 
         return results, filename
+

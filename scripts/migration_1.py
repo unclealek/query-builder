@@ -3,9 +3,9 @@ import sqlite3
 import json
 import csv
 from sql.config import DB_NAME, CSV_SOURCE
+from sql.registry.export_table import TABLE_REGISTRY
 
 def run_migration():
-    from sql.registry.export_table import TABLE_REGISTRY
     table = TABLE_REGISTRY["food_review"]
 
     with open(table.schema_path, 'r') as f:
@@ -22,7 +22,8 @@ def run_migration():
 
     cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS {table.name} (
-            {', '.join(col_defs)}
+        _chunk_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        {', '.join(col_defs)}
         )
     """)
 
