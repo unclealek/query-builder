@@ -6,8 +6,13 @@ import os
 from sql.models.base_query import BaseQuery
 from sql.config import DB_NAME
 from snowflaky.config import SF_CONFIG
+import uuid
+import traceback
 
 def push_to_snowflake(batch_size=5000):
+    # 1. Generate a unique ID for THIS specific run
+    run_id = str(uuid.uuid4())
+    print(f"🚀 Starting Batch: {run_id}")
     conn_local = None
     ctx = None
 
@@ -86,10 +91,9 @@ def push_to_snowflake(batch_size=5000):
             # Copy data from stage to table
             print("Copying data into REVIEWS_STAGING...")
             cs.execute(f"""
-                COPY INTO REVIEWS_STAGING (raw_data)
-                FROM @temp_review_stage/{os.path.basename(tmp_filename)}
+                COPY INTO REVIEWS_STAGING (raw_data, batch_id)
+                FROM (SELECT $1, '{run_id}' FROM @temp_review_stage/{os.path.basename(tmp_filename)})
                 FILE_FORMAT = (TYPE = 'JSON')
-                MATCH_BY_COLUMN_NAME = NONE
             """)
 
             # Get the number of rows loaded
@@ -129,7 +133,6 @@ def push_to_snowflake(batch_size=5000):
 
     except Exception as e:
         print(f"❌ Fatal error: {e}")
-        import traceback
         traceback.print_exc()
 
     finally:
@@ -137,6 +140,7 @@ def push_to_snowflake(batch_size=5000):
             ctx.close()
         if conn_local:
             conn_local.close()
+    return run_id
 
 if __name__ == "__main__":
     push_to_snowflake()
